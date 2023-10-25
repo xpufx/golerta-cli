@@ -25,6 +25,7 @@ This application is a tool to generate the needed files
 to quickly create a Cobra application.`,
 	Run: func(cmd *cobra.Command, args []string) {
 		fmt.Println("send called")
+		cfg.Endpoint += "/alert"
 		postAlert(&cfg)
 	},
 }
@@ -44,7 +45,7 @@ func init() {
 	sendCmd.Flags().StringVarP(&cfg.RawData, "raw-data", "", "", "Raw data string")
 	sendCmd.Flags().StringVarP(&cfg.Severity, "severity", "s", "normal", "Severity ('ok', 'normal', 'major', 'minor', 'critical')")
 	//	sendCmd.Flags().StringVarP(&cfg.Service, "service", "x","", "Service (multiple invokation allowed)")
-	//	sendCmd.Flags().StringVarP(&cfg.Tag, "tag", "T", "Tag (multiple invokation allowed)")
+	sendCmd.Flags().StringArrayVarP(&cfg.Tags, "tag", "", nil, "Tags (multiple invokation allowed)")
 	//sendCmd.Flags().StringSetVar(&cfg.Attributes, 0, "attributes", "Attributes like region=eu (multiple invokation allowed)")
 	sendCmd.Flags().StringVarP(&cfg.Text, "text", "T", "", "Text string")
 	sendCmd.Flags().IntVar(&cfg.Timeout, "timeout", 0, "Timeout (integer)")
@@ -69,7 +70,7 @@ func postAlert(c *lib.Config) {
 		fmt.Println("Resource:", c.Resource)
 		fmt.Println("Severity:", c.Severity)
 		fmt.Println("Service:", c.Service)
-		fmt.Println("Tag:", c.Tag)
+		fmt.Println("Tags:", c.Tags)
 		//fmt.Println("Attributes:", c.Attributes)
 		fmt.Println("Text:", c.Text)
 		fmt.Println("Timeout:", c.Timeout)

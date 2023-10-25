@@ -23,6 +23,7 @@ var heartbeatCmd = &cobra.Command{
 		fmt.Println("heartbeat called")
 		fmt.Println("config file", cfg.Config)
 		fmt.Printf("ENDPOINT: %s\n ", viper.GetString("endpoint"))
+		cfg.Endpoint += "/heartbeat"
 		postHeartbeat(&cfg)
 	},
 }
@@ -33,11 +34,13 @@ func init() {
 	heartbeatCmd.Flags().StringVarP(&cfg.Config, "config", "c", ".golerta.conf", "Configuration file path (basic 'key=value' format)")
 	heartbeatCmd.Flags().StringVarP(&cfg.APIKey, "apikey", "a", "", "API Key (mandatory)")
 	heartbeatCmd.Flags().StringVarP(&cfg.Endpoint, "endpoint", "E", "", "HTTP endpoint URL for POST request (mandatory)")
-	heartbeatCmd.Flags().StringVarP(&cfg.Group, "group", "g", "", "Group string")
-	heartbeatCmd.Flags().StringVarP(&cfg.Environment, "environment", "", "", "Environment string")
+	//	heartbeatCmd.Flags().StringVarP(&cfg.Group, "group", "g", "", "Group string")
+	//	heartbeatCmd.Flags().StringVarP(&cfg.Environment, "environment", "", "", "Environment string")
 	heartbeatCmd.Flags().StringVarP(&cfg.Origin, "origin", "o", "", "Origin string")
-	heartbeatCmd.Flags().StringVarP(&cfg.Severity, "severity", "s", "normal", "Severity ('ok', 'normal', 'major', 'minor', 'critical')")
+	heartbeatCmd.Flags().StringArrayVarP(&cfg.Tags, "tag", "", nil, "Tags")
+	//heartbeatCmd.Flags().StringVarP(&cfg.Severity, "severity", "s", "normal", "Severity ('ok', 'normal', 'major', 'minor', 'critical')")
 	heartbeatCmd.Flags().IntVar(&cfg.Timeout, "timeout", 0, "Timeout (integer)")
+	heartbeatCmd.Flags().MarkHidden("config")
 	// service
 	// tag
 	// customer
@@ -55,13 +58,19 @@ func postHeartbeat(c *lib.Config) {
 		fmt.Println("Origin:", c.Origin)
 		fmt.Println("Severity:", c.Severity)
 		fmt.Println("Service:", c.Service)
-		fmt.Println("Tag:", c.Tag)
+		fmt.Println("Tags:", c.Tags)
 		fmt.Println("Timeout:", c.Timeout)
 		fmt.Println("Value:", c.Value)
 	}
 	// Check for mandatory parameters after all values have been gathered
-	if c.APIKey == "" || c.Endpoint == "" || c.Event == "" || c.Resource == "" {
-		fmt.Println("Error: Mandatory parameters (apikey, endpoint, event, resource) must be provided.")
+	/*
+		if c.APIKey == "" || c.Endpoint == "" || c.Event == "" || c.Resource == "" {
+			fmt.Println("Error: Mandatory parameters (apikey, endpoint, event, resource) must be provided.")
+			os.Exit(1)
+		}
+	*/
+	if c.APIKey == "" || c.Endpoint == "" {
+		fmt.Println("Error: Mandatory parameters (apikey, endpoint) must be provided.")
 		os.Exit(1)
 	}
 
