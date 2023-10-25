@@ -1,35 +1,23 @@
-/*
-Copyright © 2023 xpufx
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in
-all copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-THE SOFTWARE.
-*/
 package cmd
 
 import (
 	"fmt"
+	"golerta-cli/lib"
 	"os"
 
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
 
-var cfgFile string
+var cfg lib.Config
+
+var (
+	cfgFile    = ""
+	curlFlag   = false
+	debugFlag  = false
+	dryrunFlag = false
+	version    = "1.0.8"
+)
 
 // rootCmd represents the base command when called without any subcommands
 var rootCmd = &cobra.Command{
@@ -48,6 +36,7 @@ func Execute() {
 	if err != nil {
 		os.Exit(1)
 	}
+	fmt.Println("From cfg Struct :", cfg.Endpoint)
 }
 
 func init() {
@@ -57,11 +46,24 @@ func init() {
 	// Cobra supports persistent flags, which, if defined here,
 	// will be global for your application.
 
-	rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/.golerta-cli.yaml)")
+	rootCmd.PersistentFlags().StringVarP(&cfgFile, "config", "c", "", "config file (default is $HOME/.golerta-cli)")
+	rootCmd.PersistentFlags().BoolVarP(&debugFlag, "debug", "d", false, "Display info useful for debugging")
+	rootCmd.PersistentFlags().BoolVarP(&curlFlag, "curl", "", false, "Generate a curl command representation of gathered parameters for testing")
+	rootCmd.PersistentFlags().BoolVarP(&dryrunFlag, "dryrun", "", false, "Display info but don't post the endpoint")
+	rootCmd.PersistentFlags().StringVarP(&cfg.Endpoint, "endpoint", "E", "", "Endpoint (Mandatory)")
+	viper.BindPFlag("endpoint", rootCmd.PersistentFlags().Lookup("endpoint"))
+	viper.BindPFlag("config", rootCmd.PersistentFlags().Lookup("config"))
+	viper.BindPFlag("debug", rootCmd.PersistentFlags().Lookup("debug"))
+	viper.BindPFlag("curl", rootCmd.PersistentFlags().Lookup("curl"))
+	viper.BindPFlag("dryrun", rootCmd.PersistentFlags().Lookup("dryrun"))
 
 	// Cobra also supports local flags, which will only run
 	// when this action is called directly.
-	rootCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
+	//	rootCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
+	rootCmd.CompletionOptions.DisableDefaultCmd = true
+	rootCmd.DisableSuggestions = true
+	rootCmd.Version = version
+
 }
 
 // initConfig reads in config file and ENV variables if set.
@@ -76,14 +78,23 @@ func initConfig() {
 
 		// Search config in home directory with name ".golerta-cli" (without extension).
 		viper.AddConfigPath(home)
-		viper.SetConfigType("yaml")
+		viper.SetConfigType("env")
 		viper.SetConfigName(".golerta-cli")
 	}
-
+	viper.SetEnvPrefix("GOLERTA_CLI")
 	viper.AutomaticEnv() // read in environment variables that match
 
 	// If a config file is found, read it in.
 	if err := viper.ReadInConfig(); err == nil {
 		fmt.Fprintln(os.Stderr, "Using config file:", viper.ConfigFileUsed())
+	} else {
+		fmt.Println("Config file error: ", err)
+		os.Exit(1)
+	}
+
+	if err := viper.Unmarshal(&cfg); err == nil {
+	} else {
+		fmt.Println("Viper Unmarshal error? ", err)
+		os.Exit(1)
 	}
 }
