@@ -11,7 +11,6 @@ import (
 	"golerta-cli/lib"
 
 	"github.com/spf13/cobra"
-	"github.com/spf13/viper"
 )
 
 // heartbeatCmd represents the heartbeat command
@@ -20,9 +19,6 @@ var heartbeatCmd = &cobra.Command{
 	Short: "Send a heartbeat to alerta endpoint",
 	Long:  ``,
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("heartbeat called")
-		fmt.Println("config file", cfg.Config)
-		fmt.Printf("ENDPOINT: %s\n ", viper.GetString("endpoint"))
 		cfg.Endpoint += "/heartbeat"
 		postHeartbeat(&cfg)
 	},

@@ -1,1 +1,3 @@
 tmp/*
+.golerta-cli
+golerta-cli
