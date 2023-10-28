@@ -16,15 +16,8 @@ import (
 // sendCmd represents the send command
 var sendCmd = &cobra.Command{
 	Use:   "send",
-	Short: "A brief description of your command",
-	Long: `A longer description that spans multiple lines and likely contains examples
-and usage of using your command. For example:
-
-Cobra is a CLI library for Go that empowers applications.
-This application is a tool to generate the needed files
-to quickly create a Cobra application.`,
+	Short: "Send an alert to alerta endpoint.",
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("send called")
 		cfg.Endpoint += "/alert"
 		postAlert(&cfg)
 	},
@@ -33,9 +26,9 @@ to quickly create a Cobra application.`,
 func init() {
 	rootCmd.AddCommand(sendCmd)
 
-	sendCmd.Flags().StringVarP(&cfg.Config, "config", "c", ".golerta.conf", "Configuration file path (basic 'key=value' format)")
-	sendCmd.Flags().StringVarP(&cfg.APIKey, "apikey", "a", "", "API Key (mandatory)")
-	sendCmd.Flags().StringVarP(&cfg.Endpoint, "endpoint", "E", "", "HTTP endpoint URL for POST request (mandatory)")
+	//	sendCmd.Flags().StringVarP(&cfg.Config, "config", "c", ".golerta.conf", "Configuration file path (basic 'key=value' format)")
+	//	sendCmd.Flags().StringVarP(&cfg.APIKey, "apikey", "a", "", "API Key (mandatory)")
+	//	sendCmd.Flags().StringVarP(&cfg.Endpoint, "endpoint", "E", "", "HTTP endpoint URL for POST request (mandatory)")
 	sendCmd.Flags().StringVarP(&cfg.Event, "event", "e", "", "Event string (mandatory)")
 	sendCmd.Flags().StringVarP(&cfg.Type, "type", "t", "", "Event type string")
 	sendCmd.Flags().StringVarP(&cfg.Group, "group", "g", "", "Group string")
@@ -56,7 +49,7 @@ func init() {
 
 func postAlert(c *lib.Config) {
 	curlFlag = true
-	if debugFlag {
+	if debugFlag || dryrunFlag {
 		// Print the configuration variables
 		fmt.Println("Configuration Variables:")
 		fmt.Println("API Key:", c.APIKey)
@@ -106,12 +99,11 @@ func postAlert(c *lib.Config) {
 	req.Header.Set("Authorization", "Key "+c.APIKey) // Set the API key as the authorization header
 
 	// Print the request headers for debugging
-	if debugFlag {
+	if debugFlag || dryrunFlag {
 		// Print the JSON data
 		fmt.Println("JSON Data:")
 		fmt.Println(string(jsonData))
 		// Print the equivalent curl command
-		fmt.Println("\nEquivalent curl command:")
 		fmt.Println("Request Headers:")
 		for key, values := range req.Header {
 			for _, value := range values {
@@ -119,36 +111,38 @@ func postAlert(c *lib.Config) {
 			}
 		}
 	}
-	if debugFlag || curlFlag {
+	if debugFlag || curlFlag || dryrunFlag {
+		fmt.Println("\nEquivalent curl command:")
 		curlCommand := generateCurlCommand(c.Endpoint, c.APIKey, jsonData)
-
 		fmt.Println(curlCommand)
 	}
 
-	// network api call
-	resp, err := client.Do(req)
-	if err != nil {
-		fmt.Println("Error:", err)
-		os.Exit(1)
-	}
-	defer resp.Body.Close()
-
-	// Check the response status
-	if resp.StatusCode == http.StatusCreated {
-		fmt.Println("Alerta record was added.")
-		if !debugFlag {
-			os.Exit(0)
+	if !dryrunFlag {
+		// network api call
+		resp, err := client.Do(req)
+		if err != nil {
+			fmt.Println("Error:", err)
+			os.Exit(1)
 		}
-	} else if resp.StatusCode != http.StatusOK {
-		fmt.Printf("Error: Unexpected response status code %d\n", resp.StatusCode)
-		os.Exit(1)
-	}
+		defer resp.Body.Close()
 
-	// Read and print the response body
-	if debugFlag {
-		responseData := make([]byte, 1024)
-		n, _ := io.ReadFull(resp.Body, responseData)
-		fmt.Println("HTTP POST Response:")
-		fmt.Println(string(responseData[:n]))
+		// Check the response status
+		if resp.StatusCode == http.StatusCreated {
+			fmt.Println("Alerta record was added.")
+			if !debugFlag {
+				os.Exit(0)
+			}
+		} else if resp.StatusCode != http.StatusOK {
+			fmt.Printf("Error: Unexpected response status code %d\n", resp.StatusCode)
+			os.Exit(1)
+		}
+
+		// Read and print the response body
+		if debugFlag {
+			responseData := make([]byte, 1024)
+			n, _ := io.ReadFull(resp.Body, responseData)
+			fmt.Println("HTTP POST Response:")
+			fmt.Println(string(responseData[:n]))
+		}
 	}
 }

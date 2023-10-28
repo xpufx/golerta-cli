@@ -27,9 +27,6 @@ var heartbeatCmd = &cobra.Command{
 func init() {
 	rootCmd.AddCommand(heartbeatCmd)
 
-	heartbeatCmd.Flags().StringVarP(&cfg.Config, "config", "c", ".golerta.conf", "Configuration file path (basic 'key=value' format)")
-	heartbeatCmd.Flags().StringVarP(&cfg.APIKey, "apikey", "a", "", "API Key (mandatory)")
-	heartbeatCmd.Flags().StringVarP(&cfg.Endpoint, "endpoint", "E", "", "HTTP endpoint URL for POST request (mandatory)")
 	//	heartbeatCmd.Flags().StringVarP(&cfg.Group, "group", "g", "", "Group string")
 	//	heartbeatCmd.Flags().StringVarP(&cfg.Environment, "environment", "", "", "Environment string")
 	heartbeatCmd.Flags().StringVarP(&cfg.Origin, "origin", "o", "", "Origin string")
@@ -44,7 +41,7 @@ func init() {
 }
 
 func postHeartbeat(c *lib.Config) {
-	if debugFlag {
+	if debugFlag || dryrunFlag {
 		// Print the configuration variables
 		fmt.Println("Configuration Variables:")
 		fmt.Println("API Key:", c.APIKey)
@@ -90,12 +87,11 @@ func postHeartbeat(c *lib.Config) {
 	req.Header.Set("Authorization", "Key "+c.APIKey) // Set the API key as the authorization header
 
 	// Print the request headers for debugging
-	if debugFlag {
+	if debugFlag || dryrunFlag {
 		// Print the JSON data
 		fmt.Println("JSON Data:")
 		fmt.Println(string(jsonData))
 		// Print the equivalent curl command
-		fmt.Println("\nEquivalent curl command:")
 		fmt.Println("Request Headers:")
 		for key, values := range req.Header {
 			for _, value := range values {
@@ -103,36 +99,39 @@ func postHeartbeat(c *lib.Config) {
 			}
 		}
 	}
-	if debugFlag || curlFlag {
+	if debugFlag || curlFlag || dryrunFlag {
+		fmt.Println("\nEquivalent curl command:")
 		curlCommand := generateCurlCommand(c.Endpoint, c.APIKey, jsonData)
 
 		fmt.Println(curlCommand)
 	}
 
-	// network api call
-	resp, err := client.Do(req)
-	if err != nil {
-		fmt.Println("Error:", err)
-		os.Exit(1)
-	}
-	defer resp.Body.Close()
-
-	// Check the response status
-	if resp.StatusCode == http.StatusCreated {
-		fmt.Println("Alerta record was added.")
-		if !debugFlag {
-			os.Exit(0)
+	if !dryrunFlag {
+		// network api call
+		resp, err := client.Do(req)
+		if err != nil {
+			fmt.Println("Error:", err)
+			os.Exit(1)
 		}
-	} else if resp.StatusCode != http.StatusOK {
-		fmt.Printf("Error: Unexpected response status code %d\n", resp.StatusCode)
-		os.Exit(1)
-	}
+		defer resp.Body.Close()
 
-	// Read and print the response body
-	if debugFlag {
-		responseData := make([]byte, 1024)
-		n, _ := io.ReadFull(resp.Body, responseData)
-		fmt.Println("HTTP POST Response:")
-		fmt.Println(string(responseData[:n]))
+		// Check the response status
+		if resp.StatusCode == http.StatusCreated {
+			fmt.Println("Heartbeat was sent.")
+			if !debugFlag {
+				os.Exit(0)
+			}
+		} else if resp.StatusCode != http.StatusOK {
+			fmt.Printf("Error: Unexpected response status code %d\n", resp.StatusCode)
+			os.Exit(1)
+		}
+
+		// Read and print the response body
+		if debugFlag {
+			responseData := make([]byte, 1024)
+			n, _ := io.ReadFull(resp.Body, responseData)
+			fmt.Println("HTTP POST Response:")
+			fmt.Println(string(responseData[:n]))
+		}
 	}
 }

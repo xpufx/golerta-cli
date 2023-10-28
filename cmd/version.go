@@ -26,6 +26,9 @@ func init() {
 		// Hide flag for this command
 		command.Flags().MarkHidden("config")
 		command.Flags().MarkHidden("endpoint")
+		command.Flags().MarkHidden("apikey")
+		command.Flags().MarkHidden("curl")
+		command.Flags().MarkHidden("dryrun")
 		// Call parent help func
 		command.Parent().HelpFunc()(command, strings)
 	})
