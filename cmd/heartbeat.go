@@ -19,8 +19,13 @@ var heartbeatCmd = &cobra.Command{
 	Short: "Send a heartbeat to alerta endpoint",
 	Long:  ``,
 	Run: func(cmd *cobra.Command, args []string) {
-		cfg.Endpoint += "/heartbeat"
-		postHeartbeat(&cfg)
+		if cfg.APIKey == "" || cfg.Endpoint == "" {
+			fmt.Println("Error: Mandatory parameters (apikey, endpoint) must be provided.")
+			os.Exit(1)
+		} else {
+			cfg.Endpoint += "/heartbeat"
+			postHeartbeat(&cfg)
+		}
 	},
 }
 
@@ -62,10 +67,6 @@ func postHeartbeat(c *lib.Config) {
 			os.Exit(1)
 		}
 	*/
-	if c.APIKey == "" || c.Endpoint == "" {
-		fmt.Println("Error: Mandatory parameters (apikey, endpoint) must be provided.")
-		os.Exit(1)
-	}
 
 	// Convert the Config struct to JSON
 	jsonData, err := json.Marshal(c)

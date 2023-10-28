@@ -18,8 +18,14 @@ var sendCmd = &cobra.Command{
 	Use:   "send",
 	Short: "Send an alert to alerta endpoint.",
 	Run: func(cmd *cobra.Command, args []string) {
-		cfg.Endpoint += "/alert"
-		postAlert(&cfg)
+		// Check for mandatory parameters after all values have been gathered
+		if cfg.APIKey == "" || cfg.Endpoint == "" || cfg.Event == "" || cfg.Resource == "" {
+			fmt.Println("Error: Mandatory parameters (apikey, endpoint, event, resource) must be provided.")
+			os.Exit(1)
+		} else {
+			cfg.Endpoint += "/alert"
+			postAlert(&cfg)
+		}
 	},
 }
 
@@ -71,12 +77,6 @@ func postAlert(c *lib.Config) {
 		fmt.Println()
 		fmt.Println("Debug: ", debugFlag)
 		fmt.Println("Dryrun:", dryrunFlag)
-	}
-
-	// Check for mandatory parameters after all values have been gathered
-	if c.APIKey == "" || c.Endpoint == "" || c.Event == "" || c.Resource == "" {
-		fmt.Println("Error: Mandatory parameters (apikey, endpoint, event, resource) must be provided.")
-		os.Exit(1)
 	}
 
 	// Convert the Config struct to JSON
