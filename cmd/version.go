@@ -3,8 +3,6 @@ package cmd
 import (
 	"fmt"
 
-	"golerta-cli/lib"
-
 	"github.com/spf13/cobra"
 )
 
@@ -12,10 +10,8 @@ import (
 var versionCmd = &cobra.Command{
 	Use:   "version",
 	Short: "Displays program version.",
-	Long: `Displays program version
-	such that i can be used to send as alerta data`,
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println(lib.Version)
+		fmt.Println(rootCmd.Version)
 		//		fmt.Println("endpoint at version cmd", cfg.Endpoint)
 	},
 }
@@ -29,6 +25,7 @@ func init() {
 		command.Flags().MarkHidden("apikey")
 		command.Flags().MarkHidden("curl")
 		command.Flags().MarkHidden("dryrun")
+		command.Flags().MarkHidden("debug")
 		// Call parent help func
 		command.Parent().HelpFunc()(command, strings)
 	})

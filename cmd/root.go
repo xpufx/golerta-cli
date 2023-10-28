@@ -16,14 +16,14 @@ var (
 	curlFlag   = false
 	debugFlag  = false
 	dryrunFlag = false
-	version    = "1.0.8"
+	version    = "1.0.9"
 )
 
 // rootCmd represents the base command when called without any subcommands
 var rootCmd = &cobra.Command{
-	Use:   "golerta-cli",
-	Short: "Simple alerta.io client for sending alerts and heartbeats.",
-	Long:  ``,
+	Use:     "golerta-cli",
+	Short:   "Simple alerta.io client for sending alerts and heartbeats.",
+	Version: version,
 	//Run:   func(cmd *cobra.Command, args []string) { fmt.Println("root cmd mock") },
 }
 
@@ -68,7 +68,8 @@ func init() {
 
 	rootCmd.CompletionOptions.DisableDefaultCmd = true
 	rootCmd.DisableSuggestions = true
-	rootCmd.Version = version
+	//rootCmd.Version = version
+	rootCmd.SetVersionTemplate(version)
 
 }
 
