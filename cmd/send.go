@@ -43,7 +43,7 @@ func init() {
 	sendCmd.Flags().StringVarP(&cfg.Origin, "origin", "o", "", "Origin string")
 	sendCmd.Flags().StringVarP(&cfg.RawData, "raw-data", "", "", "Raw data string")
 	sendCmd.Flags().StringVarP(&cfg.Severity, "severity", "s", "normal", "Severity ('ok', 'normal', 'major', 'minor', 'critical')")
-	//	sendCmd.Flags().StringVarP(&cfg.Service, "service", "x","", "Service (multiple invokation allowed)")
+	sendCmd.Flags().StringArrayVarP(&cfg.Service, "service", "x", nil, "Service (multiple invokation allowed)")
 	sendCmd.Flags().StringArrayVarP(&cfg.Tags, "tag", "", nil, "Tags (multiple invokation allowed)")
 	//sendCmd.Flags().StringSetVar(&cfg.Attributes, 0, "attributes", "Attributes like region=eu (multiple invokation allowed)")
 	sendCmd.Flags().StringVarP(&cfg.Text, "text", "T", "", "Text string")
@@ -54,7 +54,6 @@ func init() {
 }
 
 func postAlert(c *lib.Config) {
-	curlFlag = true
 	if debugFlag || dryrunFlag {
 		// Print the configuration variables
 		fmt.Println("Configuration Variables:")
