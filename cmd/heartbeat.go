@@ -60,13 +60,6 @@ func postHeartbeat(c *lib.Config) {
 		fmt.Println("Timeout:", c.Timeout)
 		fmt.Println("Value:", c.Value)
 	}
-	// Check for mandatory parameters after all values have been gathered
-	/*
-		if c.APIKey == "" || c.Endpoint == "" || c.Event == "" || c.Resource == "" {
-			fmt.Println("Error: Mandatory parameters (apikey, endpoint, event, resource) must be provided.")
-			os.Exit(1)
-		}
-	*/
 
 	// Convert the Config struct to JSON
 	jsonData, err := json.Marshal(c)
