@@ -13,7 +13,9 @@ All configuration options and parameters can come from three different sources. 
 
 # For sending alerts
 
-```golerta-cli send --help
+```
+golerta-cli send --help
+
 Send an alert to alerta endpoint.
 
 Usage:
@@ -47,6 +49,8 @@ Global Flags:
 # For sending heartbeats
 
 ```
+golerta-cli heartbeat --help
+
 Send a heartbeat to alerta endpoint
 
 Usage:
