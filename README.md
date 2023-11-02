@@ -2,14 +2,14 @@
 
 golerta-cli is a simple CLI client that implements a subset of the alerta CLI functionality.
 
-Currently sending alerts and sending heartbeats are supported. Even there some parameters might be missing since I've been testing the client based on my own needs. The official alerta CLI is a Python program
+Currently sending alerts and sending heartbeats are supported. Even there some parameters might be missing since I've been testing the client based on my own needs. The official alerta CLI is a Python program.
 I've written golerta-cli to make the deployment of the client on several hosts easier. Although the resulting binary is about 7mb (without compression with upx which brings it down to around 3mb), static linking ensures that the resulting single binary will be very easy to distribute. 
 
 Please refer to the following help output for supported parameters.
 
 # Configuration
 
-All configuration options and parameters can come from three different sources. These are, command line parameters (--environment), environment variables (GOLERTA_CLI_ENVIRONMENT) or a configuration file (environment=xxxx). The precedence order from higher to lower is, command line parameters, environment variables and finally the configuration file. The default configuration file is named '.golerta-cli' and is looked for in the current directory. This can be overridden with the `--configuration` parameter.
+All configuration options and parameters can come from three different sources. These are, command line parameters (`--environment`), environment variables (`GOLERTA_CLI_ENVIRONMENT`) or a configuration file (`environment=xxxx`). The precedence order from higher to lower is, command line parameters, environment variables and finally the configuration file. The default configuration file is named '.golerta-cli' and is looked for in the current directory. This can be overridden with the `--config` parameter.
 
 # For sending alerts
 
