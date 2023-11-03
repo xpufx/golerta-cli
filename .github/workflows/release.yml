@@ -14,17 +14,13 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        goos: [linux, windows, darwin, freebsd]
+        goos: [linux, windows, darwin]
         goarch: ["386", amd64, arm64]
         exclude:
           - goarch: "386"
             goos: darwin
-          - goarch: arm64
-            goos: windows
-          - goarch: arm64
-            goos: freebsd
-          - goarch: amd64
-            goos: freebsd
+        #  - goarch: arm64
+        #    goos: windows
     steps:
     - uses: actions/checkout@v3
     - uses: wangyoucao577/go-release-action@v1
@@ -35,4 +31,4 @@ jobs:
         binary_name: "golerta-cli"
         pre_command: export CGO_ENABLED=0
         ldflags: "-s -w"
-          #        executable_compression: "upx --brute"
+        executable_compression: "upx --brute"

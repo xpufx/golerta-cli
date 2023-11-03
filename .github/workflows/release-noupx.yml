@@ -1,4 +1,4 @@
-# .github/workflows/release.yaml
+# .github/workflows/release-noupx.yaml
 
 on:
   release:
@@ -14,13 +14,8 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        goos: [linux, windows, darwin]
+        goos: [freebsd]
         goarch: ["386", amd64, arm64]
-        exclude:
-          - goarch: "386"
-            goos: darwin
-          - goarch: arm64
-            goos: windows
     steps:
     - uses: actions/checkout@v3
     - uses: wangyoucao577/go-release-action@v1
@@ -28,7 +23,6 @@ jobs:
         github_token: ${{ secrets.GITHUB_TOKEN }}
         goos: ${{ matrix.goos }}
         goarch: ${{ matrix.goarch }}
-        binary_name: "golerta-cliz"
+        binary_name: "golerta-cli"
         pre_command: export CGO_ENABLED=0
         ldflags: "-s -w"
-        executable_compression: "upx --brute"
