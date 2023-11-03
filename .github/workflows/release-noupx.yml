@@ -10,7 +10,7 @@ permissions:
 
 jobs:
   releases-matrix:
-    name: Release Go Binary with Compression
+    name: Release Go Binary without Compression
     runs-on: ubuntu-latest
     strategy:
       matrix:
