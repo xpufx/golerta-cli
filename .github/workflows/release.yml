@@ -21,6 +21,10 @@ jobs:
             goos: darwin
           - goarch: arm64
             goos: windows
+          - goarch: arm64
+            goos: freebsd
+          - goarch: amd64
+            goos: freebsd
     steps:
     - uses: actions/checkout@v3
     - uses: wangyoucao577/go-release-action@v1
