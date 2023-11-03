@@ -35,4 +35,4 @@ jobs:
         binary_name: "golerta-cli"
         pre_command: export CGO_ENABLED=0
         ldflags: "-s -w"
-        executable_compression: "upx --brute"
+          #        executable_compression: "upx --brute"
