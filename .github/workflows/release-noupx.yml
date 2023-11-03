@@ -14,8 +14,13 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        goos: [freebsd]
+        goos: [freebsd,windows]
         goarch: ["386", amd64, arm64]
+        exclude:
+          - goarch: 386
+            goos: windows
+          - goarch: amd64
+            goos: windows
     steps:
     - uses: actions/checkout@v3
     - uses: wangyoucao577/go-release-action@v1
