@@ -16,7 +16,7 @@ var (
 	curlFlag   = false
 	debugFlag  = false
 	dryrunFlag = false
-	version    = "1.0.9"
+	version    = "1.0.10"
 )
 
 // rootCmd represents the base command when called without any subcommands
