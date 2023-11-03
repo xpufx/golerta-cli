@@ -1,11 +1,5 @@
 package lib
 
-// unless we need more configuration later, we can just embed this into cmd/version
-var (
-	Version = "1.0.8"
-)
-
-// rename to Alert
 type Config struct {
 	APIKey      string   `json:"-"` //mandatory
 	Config      string   `json:"-"`
