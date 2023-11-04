@@ -6,7 +6,8 @@ import (
 	"github.com/spf13/cobra"
 )
 
-// versionCmd represents the version command
+// Displays the version which can be sent to Alerta as additional data
+// to keep an eye on program version installed on each host
 var versionCmd = &cobra.Command{
 	Use:   "version",
 	Short: "Displays program version.",
@@ -18,6 +19,7 @@ var versionCmd = &cobra.Command{
 
 func init() {
 
+	// override the default help function to remove most flags which don't make sense for Version
 	versionCmd.SetHelpFunc(func(command *cobra.Command, strings []string) {
 		// Hide flag for this command
 		command.Flags().MarkHidden("config")

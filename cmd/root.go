@@ -19,7 +19,7 @@ var (
 	version    = "1.0.10"
 )
 
-// rootCmd represents the base command when called without any subcommands
+// rootCmd does not have a function. All action is inside subcommands.
 var rootCmd = &cobra.Command{
 	Use:     "golerta-cli",
 	Short:   "Simple alerta.io client for sending alerts and heartbeats.",
@@ -82,10 +82,6 @@ func initConfig() {
 		viper.SetConfigFile(cfgFile)
 		viper.SetConfigType("env")
 	} else {
-		// Find home directory.
-		//home, err := os.UserHomeDir()
-		//cobra.CheckErr(err)
-
 		// Search config in home directory with name ".golerta-cli" (without extension).
 		viper.AddConfigPath(".")
 		viper.SetConfigType("env")

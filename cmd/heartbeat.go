@@ -32,11 +32,8 @@ var heartbeatCmd = &cobra.Command{
 func init() {
 	rootCmd.AddCommand(heartbeatCmd)
 
-	//	heartbeatCmd.Flags().StringVarP(&cfg.Group, "group", "g", "", "Group string")
-	//	heartbeatCmd.Flags().StringVarP(&cfg.Environment, "environment", "", "", "Environment string")
 	heartbeatCmd.Flags().StringVarP(&cfg.Origin, "origin", "o", "", "Origin string")
 	heartbeatCmd.Flags().StringArrayVarP(&cfg.Tags, "tag", "", nil, "Tags")
-	//heartbeatCmd.Flags().StringVarP(&cfg.Severity, "severity", "s", "normal", "Severity ('ok', 'normal', 'major', 'minor', 'critical')")
 	heartbeatCmd.Flags().IntVar(&cfg.Timeout, "timeout", 0, "Timeout (integer)")
 	heartbeatCmd.Flags().MarkHidden("config")
 	// service

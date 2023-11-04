@@ -32,9 +32,6 @@ var sendCmd = &cobra.Command{
 func init() {
 	rootCmd.AddCommand(sendCmd)
 
-	//	sendCmd.Flags().StringVarP(&cfg.Config, "config", "c", ".golerta.conf", "Configuration file path (basic 'key=value' format)")
-	//	sendCmd.Flags().StringVarP(&cfg.APIKey, "apikey", "a", "", "API Key (mandatory)")
-	//	sendCmd.Flags().StringVarP(&cfg.Endpoint, "endpoint", "E", "", "HTTP endpoint URL for POST request (mandatory)")
 	sendCmd.Flags().StringVarP(&cfg.Event, "event", "e", "", "Event string (mandatory)")
 	sendCmd.Flags().StringVarP(&cfg.Type, "type", "t", "", "Event type string")
 	sendCmd.Flags().StringVarP(&cfg.Group, "group", "g", "", "Group string")
@@ -49,8 +46,6 @@ func init() {
 	sendCmd.Flags().StringVarP(&cfg.Text, "text", "T", "", "Text string")
 	sendCmd.Flags().IntVar(&cfg.Timeout, "timeout", 0, "Timeout (integer)")
 	sendCmd.Flags().IntVar(&cfg.Value, "value", 0, "Integer value")
-	//sendCmd.Flags().BoolVar(&debugFlag, 'd', "debug", "Enable debug mode")
-	//sendCmd.Flags().BoolVar(&cfg.rlFlag, 0, "curl", "Print out ready to run `curl` command for debugging")
 }
 
 func postAlert(c *lib.Config) {
@@ -116,6 +111,7 @@ func postAlert(c *lib.Config) {
 		fmt.Println(curlCommand)
 	}
 
+	// if --dryrun is specified do not make the final HTTP POST call
 	if !dryrunFlag {
 		// network api call
 		resp, err := client.Do(req)
@@ -132,6 +128,7 @@ func postAlert(c *lib.Config) {
 				os.Exit(0)
 			}
 		} else if resp.StatusCode != http.StatusOK {
+			// sometimes the server may return an error while still accepting the alert
 			fmt.Printf("Error: Unexpected response status code %d\n", resp.StatusCode)
 			os.Exit(1)
 		}
